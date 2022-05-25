@@ -1,0 +1,25 @@
+{
+  "name": "replayfire",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facundoq94/replayfire.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/facundoq94/replayfire/issues"
+  },
+  "homepage": "https://github.com/facundoq94/replayfire#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "firebase": "^9.8.1",
+    "firebase-admin": "^10.2.0"
+  }
+}

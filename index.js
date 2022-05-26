@@ -4,5 +4,10 @@ const PORT = process.env.PORT || 5050
 app.get('/', (req, res) => {
 res.send('This is my demo project')
 })
+
+
+const { partidos } = require('./handlers/partidos')
+app.get('/partidos', partidos);
+
 app.listen(PORT, function () {
 console.log(`Demo project at: ${PORT}!`); });

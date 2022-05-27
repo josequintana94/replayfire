@@ -25,15 +25,20 @@ app.post('/create', async function(req, res) {
       }
 
     var date = new Date();
-    var date2 = new Date().addHours(1)
+    
+    //sumarle una hora
+    //var date2 = new Date().addHours(1)
 
-    //const { camara, fecha } = req.body;
+    var now = new Date();
+    now.setMinutes(now.getMinutes() + 10); // timestamp
+    now = new Date(now); // Date object
+
     var idCancha = req.body.idCancha;
     var nombreCancha = req.body.nombreCancha;
     var estado = req.body.estado;
     var emailUsuario = req.body.emailUsuario;
     var fechaInicio = date;
-    var fechaFinn = date2;
+    var fechaFinn = now;
     var idCamara = req.body.idCamara;
     var urlVideo = req.body.urlVideo;
     var hashMercadopago = req.body.hashMercadopago;

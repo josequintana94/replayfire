@@ -17,7 +17,7 @@ res.send('This is my demo project')
 const { partidos } = require('./handlers/partidos')
 app.get('/partidos', partidos);
 
-app.post('/crear-partido', async function(req, res) {
+app.post('/create', async function(req, res) {
 
     //const { camara, fecha } = req.body;
     var idCancha = req.body.idCancha;
@@ -44,6 +44,41 @@ app.post('/crear-partido', async function(req, res) {
 
     res.send('partido creado');
 })
+
+app.post('/setActivo', async function(req, res) {
+
+    const id = req.body.id;
+    var estado = 'activo';
+  
+    await db.collection('partidos').doc(id).update({
+        estado: estado
+    })
+
+    res.send('partido activado');
+})
+
+app.post('/updateUrl', async function(req, res) {
+
+    const id = req.body.id;
+    const url = req.body.url;
+
+    await db.collection('partidos').doc(id).update({
+        urlVideo: url
+    })
+
+    res.send('url actualizado');
+})
+
+app.get('/getById', async function(req, res) {
+
+    const id = req.body.id;
+    const url = req.body.url;
+
+    const partido = await db.collection('partidos').doc(id).get();
+
+    res.json(partido.data());
+})
+    
 
 app.listen(PORT, function () {
 console.log(`Demo project at: ${PORT}!`); });

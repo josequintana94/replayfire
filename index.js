@@ -19,13 +19,21 @@ app.get('/partidos', partidos);
 
 app.post('/create', async function(req, res) {
 
+    Date.prototype.addHours = function(h) {
+        this.setTime(this.getTime() + (h*60*60*1000));
+        return this;
+      }
+
+    var date = new Date();
+    var date2 = new Date().addHours(1)
+
     //const { camara, fecha } = req.body;
     var idCancha = req.body.idCancha;
     var nombreCancha = req.body.nombreCancha;
     var estado = req.body.estado;
     var emailUsuario = req.body.emailUsuario;
-    var fechaInicio = req.body.fechaInicio;
-    var fechaFinn = req.body.fechaFinn;
+    var fechaInicio = date;
+    var fechaFinn = date2;
     var idCamara = req.body.idCamara;
     var urlVideo = req.body.urlVideo;
     var hashMercadopago = req.body.hashMercadopago;

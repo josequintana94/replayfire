@@ -98,7 +98,7 @@ app.post('/create', async function(req, res) {
     console.error("Error adding document: ", error);
     });
 
-    
+    res.send('partido creado');
 })
 
 app.post('/setActivo', async function(req, res) {
@@ -135,30 +135,6 @@ app.get('/getById', async function(req, res) {
     res.json(partido.data());
 })
     
-
-app.get('/checkout', async function(req, res) {
-
-// Crea un objeto de preferencia
-let preference = {
-    items: [
-      {
-        title: "Mi producto",
-        unit_price: 100,
-        quantity: 1,
-      },
-    ],
-  };
-  
-  mercadopago.preferences
-    .create(preference)
-    .then(function (response) {
-    res.redirect(response.body.init_point);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-})
-
 app.post('/create2', async function(req, res) {
 
   Date.prototype.addHours = function(h) {
@@ -243,6 +219,29 @@ app.post('/create2', async function(req, res) {
 
 
 
+})
+
+app.get('/checkout', async function(req, res) {
+
+// Crea un objeto de preferencia
+let preference = {
+    items: [
+      {
+        title: "Mi producto",
+        unit_price: 100,
+        quantity: 1,
+      },
+    ],
+  };
+  
+  mercadopago.preferences
+    .create(preference)
+    .then(function (response) {
+    res.redirect(response.body.init_point);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 })
 
 app.listen(PORT, function () {

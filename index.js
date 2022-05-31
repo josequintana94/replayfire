@@ -1,6 +1,15 @@
 var express = require('express');
 const { db } = require("./admin");
 
+// SDK de Mercado Pago
+const mercadopago = require("mercadopago");
+// Agrega credenciales
+mercadopago.configure({
+  access_token: "APP_USR-4589063325679446-090211-8ae002b22b485c452e83c193b8e6d568-243216906",
+});
+
+    
+
 var app = express();
 const bodyParser = require("body-parser")
 app.use(bodyParser.urlencoded({
@@ -9,10 +18,19 @@ app.use(bodyParser.urlencoded({
 app.use(express.urlencoded({ extended: false}));
 
 const PORT = process.env.PORT || 5050
+
+
+app.use((req, res, next) => {    
+    res.setHeader('Access-Control-Allow-Origin', '*');    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');    
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');    
+    next();
+    });// to get access to the server from any domain like postman.
+
+    app.use(bodyParser.json());
+
 app.get('/', (req, res) => {
 res.send('This is my demo project')
 })
-
 
 const { partidos } = require('./handlers/partidos')
 app.get('/partidos', partidos);
@@ -34,6 +52,7 @@ app.post('/create', async function(req, res) {
     now = new Date(now); // Date object
 
     var idCancha = req.body.idCancha;
+    console.log("idcanchaa " + idCancha);
     var nombreCancha = req.body.nombreCancha;
     var estado = req.body.estado;
     var emailUsuario = req.body.emailUsuario;
@@ -42,6 +61,7 @@ app.post('/create', async function(req, res) {
     var idCamara = req.body.idCamara;
     var urlVideo = req.body.urlVideo;
     var hashMercadopago = req.body.hashMercadopago;
+
 
     await db.collection('partidos').add({
         idCancha,
@@ -54,6 +74,29 @@ app.post('/create', async function(req, res) {
         urlVideo,
         hashMercadopago
     })
+
+    // Add a new document with a generated id.
+    db.collection("partidos").add({
+        idCancha,
+        nombreCancha,
+        estado,
+        emailUsuario,
+        fechaInicio,
+        fechaFinn,
+        idCamara,
+        urlVideo,
+        hashMercadopago
+        })
+    .then(function(docRef) {
+    console.log("Document written with ID: ", docRef.id);
+
+
+
+    
+    })
+    .catch(function(error) {
+    console.error("Error adding document: ", error);
+    });
 
     res.send('partido creado');
 })
@@ -92,6 +135,29 @@ app.get('/getById', async function(req, res) {
     res.json(partido.data());
 })
     
+
+app.get('/checkout', async function(req, res) {
+
+// Crea un objeto de preferencia
+let preference = {
+    items: [
+      {
+        title: "Mi producto",
+        unit_price: 100,
+        quantity: 1,
+      },
+    ],
+  };
+  
+  mercadopago.preferences
+    .create(preference)
+    .then(function (response) {
+    res.redirect(response.body.init_point);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+})
 
 app.listen(PORT, function () {
 console.log(`Demo project at: ${PORT}!`); });

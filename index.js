@@ -172,22 +172,9 @@ app.post('/create2', async function(req, res) {
       idCamara,
       urlVideo,
       hashMercadopago
-  })
+  }).then(function(docRef) {
+    console.log("Document written with ID: ", docRef.id);
 
-  // Add a new document with a generated id.
-  db.collection("partidos").add({
-      idCancha,
-      nombreCancha,
-      estado,
-      emailUsuario,
-      fechaInicio,
-      fechaFinn,
-      idCamara,
-      urlVideo,
-      hashMercadopago
-      })
-  .then(function(docRef) {
-  console.log("Document written with ID: ", docRef.id);
 
   // Crea un objeto de preferencia
   let preference = {
@@ -204,8 +191,12 @@ app.post('/create2', async function(req, res) {
   mercadopago.preferences
     .create(preference)
     .then(function (response) {
+
+
       console.log(response);
     res.redirect(response.body.init_point);
+    //res.send(response.body.init_point);
+
     })
     .catch(function (error) {
       console.log(error);

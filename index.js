@@ -135,7 +135,7 @@ app.get('/getById', async function(req, res) {
     res.json(partido.data());
 })
     
-app.post('/create2', async function(req, res) {
+app.post('/create2', function(req, res) {
 
   Date.prototype.addHours = function(h) {
       this.setTime(this.getTime() + (h*60*60*1000));
@@ -162,7 +162,7 @@ app.post('/create2', async function(req, res) {
   var hashMercadopago = req.body.hashMercadopago;
 
 
-  await db.collection('partidos').add({
+  db.collection('partidos').add({
       idCancha,
       nombreCancha,
       estado,
@@ -175,7 +175,6 @@ app.post('/create2', async function(req, res) {
   }).then(function(docRef) {
     console.log("Document written with ID: ", docRef.id);
 
-
   // Crea un objeto de preferencia
   let preference = {
     items: [
@@ -187,8 +186,8 @@ app.post('/create2', async function(req, res) {
     ],
     external_reference: docRef.id
   };
-  
-  mercadopago.preferences
+
+    mercadopago.preferences
     .create(preference)
     .then(function (response) {
 
@@ -202,6 +201,10 @@ app.post('/create2', async function(req, res) {
       console.log(error);
     });
 
+
+  
+
+
   
   })
   .catch(function(error) {
@@ -211,6 +214,25 @@ app.post('/create2', async function(req, res) {
 
 
 })
+
+app.get('/ipn', (req, res) => {
+  res.send('This is my demo project')
+
+
+  exports.run = function (req, res) {
+    mercadopago.ipn.manage(req).then(function (data) {
+      res.render('jsonOutput', {
+        result: data
+      });
+    }).catch(function (error) {
+      res.render('500', {
+        error: error
+      });
+    });
+  };
+
+})
+
 
 app.get('/checkout', async function(req, res) {
 

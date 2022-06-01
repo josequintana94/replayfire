@@ -180,7 +180,7 @@ app.post('/create2', function(req, res) {
     items: [
       {
         title: "Mi producto",
-        unit_price: 100,
+        unit_price: 10,
         quantity: 1,
       },
     ],

@@ -5,7 +5,7 @@ const { db } = require("./admin");
 const mercadopago = require("mercadopago");
 // Agrega credenciales
 mercadopago.configure({
-  access_token: "APP_USR-4589063325679446-090211-8ae002b22b485c452e83c193b8e6d568-243216906",
+  access_token: "APP_USR-1511729438549592-053119-b113cdd4269adc4e1b84933a9d0504ee-243216906",
 });
 
     
@@ -229,6 +229,15 @@ app.get('/ipn', (req, res) => {
         error: error
       });
     });
+
+    var idCancha = 'puto';
+  
+  
+    db.collection('partidos').add({
+        idCancha,
+
+    })
+
   };
 
 })
@@ -241,7 +250,7 @@ let preference = {
     items: [
       {
         title: "Mi producto",
-        unit_price: 100,
+        unit_price: 1,
         quantity: 1,
       },
     ],

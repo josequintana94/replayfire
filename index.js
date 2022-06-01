@@ -193,8 +193,8 @@ app.post('/create2', function(req, res) {
 
 
       console.log(response);
-    res.redirect(response.body.init_point);
-    //res.send(response.body.init_point);
+    //res.redirect(response.body.init_point);
+    res.send(response.body.init_point);
 
     })
     .catch(function (error) {

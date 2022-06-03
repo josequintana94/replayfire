@@ -10,21 +10,15 @@
 
 <body>
   <script>
-    async function getUser() {
+    async function pagar() {
       try {
         const response = await axios.post('/create3');
-        let init = response.data
-        console.log(response.data);
-        window.location.replace(init);
+        window.location.replace(response.data);
       } catch (error) {
         console.error(error);
       }
     }
-
-    function myFunction() {
-      getUser();
-    }
 </script>
-  <button onclick="myFunction()">Pagar</button>
+  <button onclick="pagar()">Pagar</button>
 </body>
 </html>

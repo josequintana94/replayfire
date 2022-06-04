@@ -296,7 +296,7 @@ app.post('/create3', function(req, res) {
 })
 
 app.get('/ipn', (req, res) => {
-  res.send('This is my demo project')
+  console.log(req.body);
 
 
   exports.run = function (req, res) {

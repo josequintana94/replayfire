@@ -1,6 +1,6 @@
 var express = require('express');
 const { db } = require("./admin");
-
+const path = require('path')
 // SDK de Mercado Pago
 const mercadopago = require("mercadopago");
 // Agrega credenciales
@@ -29,7 +29,8 @@ app.use((req, res, next) => {
     app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-res.send('This is my demo project')
+  res.sendFile(path.join(__dirname+'/index.html'));
+//res.send('This is my demo project')
 })
 
 const { partidos } = require('./handlers/partidos')
@@ -161,6 +162,85 @@ app.post('/create2', function(req, res) {
   var urlVideo = req.body.urlVideo;
   var hashMercadopago = req.body.hashMercadopago;
 
+  db.collection('partidos').add({
+      idCancha,
+      nombreCancha,
+      estado,
+      emailUsuario,
+      fechaInicio,
+      fechaFinn,
+      idCamara,
+      urlVideo,
+      hashMercadopago
+  }).then(function(docRef) {
+    console.log("Document written with ID: ", docRef.id);
+
+  // Crea un objeto de preferencia
+  let preference = {
+    items: [
+      {
+        title: "Mi producto",
+        unit_price: 10,
+        quantity: 1,
+      },
+    ],
+    external_reference: docRef.id
+  };
+
+    mercadopago.preferences
+    .create(preference)
+    .then(function (response) {
+
+
+      console.log(response);
+    //res.redirect(response.body.init_point);
+    res.send(response.body.init_point);
+
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+
+  
+
+
+  
+  })
+  .catch(function(error) {
+  console.error("Error adding document: ", error);
+  });
+
+
+
+})
+
+
+app.post('/create3', function(req, res) {
+
+  Date.prototype.addHours = function(h) {
+      this.setTime(this.getTime() + (h*60*60*1000));
+      return this;
+    }
+
+  var date = new Date();
+  
+  //sumarle una hora
+  //var date2 = new Date().addHours(1)
+
+  var now = new Date();
+  now.setMinutes(now.getMinutes() + 10); // timestamp
+  now = new Date(now); // Date object
+
+  var idCancha = 666;
+  var nombreCancha = 'huracan';
+  var estado = 'inactivo';
+  var emailUsuario = 'paulamarchi@gmail.com';
+  var fechaInicio = date;
+  var fechaFinn = now;
+  var idCamara = 247;
+  var urlVideo = 'dropbox.com';
+  var hashMercadopago = 'rasdasd123123wasd';
 
   db.collection('partidos').add({
       idCancha,

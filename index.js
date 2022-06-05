@@ -118,9 +118,11 @@ app.post('/updateUrl', async function(req, res) {
 
     const id = req.body.id;
     const url = req.body.url;
+    const status = req.body.estado;
 
     await db.collection('partidos').doc(id).update({
-        urlVideo: url
+        urlVideo: url,
+        estado: status,
     })
 
     res.send('url actualizado');

@@ -237,7 +237,7 @@ app.post('/create3', function(req, res) {
   var idCancha = 666;
   var nombreCancha = 'huracan';
   var estado = 'inactivo';
-  var emailUsuario = 'paulamarchi@gmail.com';
+  var emailUsuario = 'test@gmail.com';
   var fechaInicio = date;
   var fechaFinn = now;
   var idCamara = 247;

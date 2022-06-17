@@ -111,7 +111,7 @@ app.post('/setActivo', async function(req, res) {
         estado: estado
     })
 
-    res.send('partido activado');
+    res.json({ message: 'Partido activado' })
 })
 
 app.post('/updateUrl', async function(req, res) {
@@ -125,6 +125,7 @@ app.post('/updateUrl', async function(req, res) {
         estado: status,
     })
 
+    
     res.send('url actualizado');
 })
 

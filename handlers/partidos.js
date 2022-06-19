@@ -4,7 +4,7 @@ exports.partidos = async (req, res) => {
     // Create a reference to the partidos collection
     const partidosRef = db.collection('partidos');
     // Create a query against the collection
-    const queryRef = partidosRef.where('estado', '==', 'inactivo');
+    const queryRef = partidosRef.where('estado', '!=', 'finalizado');
 
     try{
             queryRef.get().then((snapshot) => {

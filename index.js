@@ -298,6 +298,16 @@ app.post('/create3', function(req, res) {
 
 })
 
+app.post('/delete', function(req, res) { 
+  
+      const id = req.body.id;
+  
+      db.collection('partidos').doc(id).delete();
+  
+      res.send('partido eliminado');
+  }
+)
+
 app.get('/ipn', (req, res) => {
   console.log(req.body);
 

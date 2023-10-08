@@ -308,6 +308,17 @@ app.post('/delete', function(req, res) {
   }
 )
 
+app.post('/deleteAll', function(req, res) {
+  
+    db.collection('partidos').get().then((data) => {
+      data.forEach((doc) => {
+        db.collection('partidos').doc(doc.id).delete();
+      })
+    })
+  
+    res.send('partidos eliminados');
+})
+
 app.get('/ipn', (req, res) => {
   console.log(req.body);
 

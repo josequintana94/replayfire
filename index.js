@@ -49,7 +49,7 @@ app.post('/create', async function(req, res) {
     //var date2 = new Date().addHours(1)
 
     var now = new Date();
-    now.setMinutes(now.getSeconds() + 30); // timestamp
+    now.setSeconds(now.getSeconds() + 30); // timestamp
     now = new Date(now); // Date object
 
     var idCancha = req.body.idCancha;
@@ -152,7 +152,7 @@ app.post('/create2', function(req, res) {
   //var date2 = new Date().addHours(1)
 
   var now = new Date();
-  now.setMinutes(now.getSeconds() + 30); // timestamp
+  now.setSeconds(now.getSeconds() + 30); // timestamp
   now = new Date(now); // Date object
 
   var idCancha = req.body.idCancha;
@@ -232,7 +232,7 @@ app.post('/create3', function(req, res) {
   //var date2 = new Date().addHours(1)
 
   var now = new Date();
-  now.setMinutes(now.getSeconds() + 30); // timestamp
+  now.setSeconds(now.getSeconds() + 30); // timestamp
   now = new Date(now); // Date object
 
   var idCancha = 666;

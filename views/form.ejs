@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- ... (head content) ... -->
+    <title>Basic Form</title>
+</head>
+
+<body>
+    <script>
+        var id = '<%= id %>'; // Get the id parameter from the server
+        console.log('Received id:', id);
+    </script>
+
+    <h2>Basic Form</h2>
+    <form action="/submit" method="POST">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required><br><br>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required><br><br>
+
+        <label for="meetingDate">Meeting Date:</label>
+        <input type="date" id="meetingDate" name="meetingDate" required><br><br>
+
+        <label for="meetingTime">Meeting Time:</label>
+        <input type="time" id="meetingTime" name="meetingTime" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+
+</html>

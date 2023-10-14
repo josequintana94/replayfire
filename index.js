@@ -1,6 +1,7 @@
 var express = require('express');
 const { db } = require("./admin");
 const path = require('path')
+const ejs = require('ejs');
 
 // SDK de Mercado Pago
 const mercadopago = require("mercadopago");
@@ -15,6 +16,8 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(express.urlencoded({ extended: false }));
+app.set('view engine', 'ejs'); // Set EJS as the template engine
+app.set('views', path.join(__dirname, 'views')); 
 
 const PORT = process.env.PORT || 5050;
 
@@ -334,6 +337,11 @@ app.get('/checkout', async function (req, res) {
       console.log(error);
     });
 })
+
+app.get("/grabar/:id", (req, res) => {
+  const uniqueId = req.params.id;
+  res.render('form', { id: uniqueId });
+});
 
 app.listen(PORT, function () {
   console.log(`Demo project at: ${PORT}!`);

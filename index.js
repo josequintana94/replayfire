@@ -235,6 +235,7 @@ app.post('/create3', function (req, res) {
     urlVideo,
     hashMercadopago
   }).then(function (docRef) {
+    
     console.log("Document written with ID: ", docRef.id);
 
     // Crea un objeto de preferencia

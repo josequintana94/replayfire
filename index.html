@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Replay</title>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
@@ -18,7 +19,16 @@
         console.error(error);
       }
     }
-</script>
+  </script>
+
+  <script src="qrscript.js"></script>
   <button onclick="pagar()">Pagar</button>
+  <input type="text" id="nameInput" placeholder="Enter your name">
+  <button onclick="generateQRCode()">Generate QR Code</button>
+  <div id="qrcode">
+    <!-- QR Code will be generated here -->
+    <img id="qrImg" src="" alt="QR Code">
+  </div>
 </body>
+
 </html>

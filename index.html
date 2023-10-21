@@ -27,18 +27,17 @@
         height: 100
       });
 
-      //read input "nameInput" 
       var name = document.getElementById("nameInput").value;
-      var url = "myurl.com/" + name;
+      var url = "https://replayfire.vercel.app/" + name;
 
       qrcode.makeCode(url);
     }
   </script>
   <h1>Replay</h1>
   <button onclick="pagar()">Pagar</button>
-  <input type="text" id="nameInput" placeholder="Enter your name">
-  <button onclick="generateQRCode()">Generate QR Code</button>
-  <div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div>
+  <input type="text" id="nameInput" placeholder="Enter the place name">
+  <button onclick="generateQRCode()">Generate place QR Code</button>
+  <div id="qrcode" style="width:400px; height:400px; margin-top:25px;"></div>
 </body>
 
 </html>

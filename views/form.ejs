@@ -2,32 +2,45 @@
 <html lang="en">
 
 <head>
-    <!-- ... (head content) ... -->
-    <title>Basic Form</title>
+    <title>Reservar</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
 <body>
     <script>
         var id = '<%= id %>'; // Get the id parameter from the server
         console.log('Received id:', id);
+
+        async function pagar(emailInput, dayInput, timeInput) {
+            var combinedDateTimeString = dayInput + ' ' + timeInput;
+
+            var recordingDate = new Date(combinedDateTimeString);
+
+            try {
+                const response = await axios.post('/crearGrabacion', {
+                    id: id,
+                    email: emailInput,
+                    recordingDate: recordingDate,
+                });
+                window.location.replace(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
     </script>
 
-    <h2>Basic Form</h2>
-    <form action="/submit" method="POST">
-        <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" name="firstName" required><br><br>
+    <h2>Reservar</h2>
 
-        <label for="lastName">Last Name:</label>
-        <input type="text" id="lastName" name="lastName" required><br><br>
+    <label for="emailInput">Tu email:</label>
+    <input type="text" id="emailInput" name="emailInput" required><br><br>
 
-        <label for="meetingDate">Meeting Date:</label>
-        <input type="date" id="meetingDate" name="meetingDate" required><br><br>
+    <label for="recordingDay">Dia de grabacion:</label>
+    <input type="date" id="recordingDay" name="recordingDay" required><br><br>
 
-        <label for="meetingTime">Meeting Time:</label>
-        <input type="time" id="meetingTime" name="meetingTime" required><br><br>
+    <label for="recordingTime">Hora de grabacion:</label>
+    <input type="time" id="recordingTime" name="recordingTime" required><br><br>
 
-        <input type="submit" value="Submit">
-    </form>
-</body>
+    <button onclick="pagar(emailInput.value, recordingDay.value, recordingTime.value)">Pagar</button>
 
 </html>

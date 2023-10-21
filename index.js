@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.urlencoded({ extended: false }));
 app.set('view engine', 'ejs'); // Set EJS as the template engine
-app.set('views', path.join(__dirname, 'views')); 
+app.set('views', path.join(__dirname, 'views'));
 
 const PORT = process.env.PORT || 5050;
 
@@ -238,7 +238,7 @@ app.post('/create3', function (req, res) {
     urlVideo,
     hashMercadopago
   }).then(function (docRef) {
-    
+
     console.log("Document written with ID: ", docRef.id);
 
     // Crea un objeto de preferencia
@@ -346,3 +346,76 @@ app.get("/:id", (req, res) => {
 app.listen(PORT, function () {
   console.log(`Demo project at: ${PORT}!`);
 });
+
+app.post('/crearGrabacion', function (req, res) {
+  const id = req.body.id;
+  const email = req.body.email;
+  const recordingDate = req.body.recordingDate;
+
+  console.log("id: " + id);
+  console.log("email: " + email);
+  console.log("recordingDate: " + recordingDate);
+
+  Date.prototype.addHours = function (h) {
+    this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+    return this;
+  }
+
+  var endDate = new Date(recordingDate);
+  endDate.setSeconds(endDate.getSeconds() + 30);
+  endDate = new Date(endDate);
+
+  var idCancha = id;
+  var nombreCancha = id;
+  var estado = 'inactivo';
+  var emailUsuario = email;
+  var fechaInicio = new Date(recordingDate);
+  var fechaFinn = endDate;
+  var idCamara = 247;
+  var urlVideo = 'dropbox.com';
+  var hashMercadopago = 'rasdasd123123wasd';
+
+  db.collection('partidos').add({
+    idCancha,
+    nombreCancha,
+    estado,
+    emailUsuario,
+    fechaInicio,
+    fechaFinn,
+    idCamara,
+    urlVideo,
+    hashMercadopago
+  }).then(function (docRef) {
+
+    console.log("Document written with ID: ", docRef.id);
+
+    // Crea un objeto de preferencia
+    let preference = {
+      items: [
+        {
+          title: "Mi producto",
+          unit_price: 10,
+          quantity: 1,
+        },
+      ],
+      external_reference: docRef.id
+    };
+
+    mercadopago.preferences
+      .create(preference)
+      .then(function (response) {
+
+
+        console.log(response);
+        //res.redirect(response.body.init_point);
+        res.send(response.body.init_point);
+
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  })
+    .catch(function (error) {
+      console.error("Error adding document: ", error);
+    });
+})

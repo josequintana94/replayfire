@@ -338,7 +338,7 @@ app.get('/checkout', async function (req, res) {
     });
 })
 
-app.get("/grabar/:id", (req, res) => {
+app.get("/:id", (req, res) => {
   const uniqueId = req.params.id;
   res.render('form', { id: uniqueId });
 });

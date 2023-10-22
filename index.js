@@ -2,6 +2,9 @@ var express = require('express');
 const { db } = require("./admin");
 const path = require('path')
 const ejs = require('ejs');
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // Number of salt rounds for bcrypt hashing
+const apiKey = '3128fahsf9ah142941h2jk14h124812h9412lkdnsa90932141'; // Replace this with your actual API key
 
 // SDK de Mercado Pago
 const mercadopago = require("mercadopago");
@@ -315,7 +318,6 @@ app.get('/ipn', (req, res) => {
   }
 })
 
-
 app.get('/checkout', async function (req, res) {
   // Crea un objeto de preferencia
   let preference = {
@@ -419,3 +421,73 @@ app.post('/crearGrabacion', function (req, res) {
       console.error("Error adding document: ", error);
     });
 })
+
+// Modified endpoint for creating a user with encrypted password and API key authentication
+app.post('/crearUsuario', function (req, res) {
+  const providedApiKey = req.headers['api-key'];
+
+  // Check if the provided API key matches the expected API key
+  if (providedApiKey !== apiKey) {
+    res.status(401).send('Unauthorized');
+    return;
+  }
+
+  const email = req.body.email;
+  const password = req.body.password;
+  const usuario = req.body.usuario;
+
+  // Hash the password using bcrypt before storing it in the database
+  bcrypt.hash(password, saltRounds, function(err, hashedPassword) {
+    if (err) {
+      console.error("Error hashing password: ", err);
+      res.status(500).send("Internal Server Error");
+      return;
+    }
+
+    db.collection('usuarios').add({
+      email,
+      password: hashedPassword, // Store the hashed password in the database
+      usuario
+    }).then(function (docRef) {
+      console.log("Document written with ID: ", docRef.id);
+      res.send('usuario creado');
+    }).catch(function (error) {
+      console.error("Error adding document: ", error);
+      res.status(500).send("Internal Server Error");
+    });
+  });
+});
+
+app.post('/login', function (req, res) {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  // Retrieve the user document from the database based on the provided email
+  db.collection('usuarios').where('email', '==', email).get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        // User not found
+        res.status(401).send('Invalid email or password');
+        return;
+      }
+
+      // Check if the provided password matches the hashed password in the database
+      snapshot.forEach(doc => {
+        const hashedPassword = doc.data().password;
+
+        bcrypt.compare(password, hashedPassword, function(err, result) {
+          if (err || !result) {
+            // Incorrect password
+            res.status(401).send('Invalid email or password');
+          } else {
+            // Passwords match, user is authenticated
+            res.send('Login successful');
+          }
+        });
+      });
+    })
+    .catch(error => {
+      console.error("Error getting user document: ", error);
+      res.status(500).send("Internal Server Error");
+    });
+});

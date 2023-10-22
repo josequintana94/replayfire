@@ -481,7 +481,7 @@ app.post('/login', function (req, res) {
             res.status(401).send('Invalid email or password');
           } else {
             // Passwords match, user is authenticated
-            res.send('Login successful');
+            res.json(doc.data());
           }
         });
       });

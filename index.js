@@ -437,7 +437,7 @@ app.post('/crearUsuario', function (req, res) {
   const usuario = req.body.usuario;
 
   // Hash the password using bcrypt before storing it in the database
-  bcrypt.hash(password, saltRounds, function(err, hashedPassword) {
+  bcrypt.hash(password, saltRounds, function (err, hashedPassword) {
     if (err) {
       console.error("Error hashing password: ", err);
       res.status(500).send("Internal Server Error");
@@ -475,7 +475,7 @@ app.post('/login', function (req, res) {
       snapshot.forEach(doc => {
         const hashedPassword = doc.data().password;
 
-        bcrypt.compare(password, hashedPassword, function(err, result) {
+        bcrypt.compare(password, hashedPassword, function (err, result) {
           if (err || !result) {
             // Incorrect password
             res.status(401).send('Invalid email or password');
@@ -490,4 +490,25 @@ app.post('/login', function (req, res) {
       console.error("Error getting user document: ", error);
       res.status(500).send("Internal Server Error");
     });
+});
+
+app.post('/partidosusuario', async function (req, res) {
+  const { usuario } = req.body;
+  const partidosRef = db.collection('partidos');
+  const queryRef = partidosRef.where('estado', '!=', 'finalizado').where('nombreCancha', '==', usuario);
+
+  try {
+    queryRef.get().then((snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log(data);
+      return res.status(201).json(data);
+    })
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ general: "Something went wrong, please try again" });
+  }
 });

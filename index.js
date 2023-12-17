@@ -287,3 +287,15 @@ app.post('/partidosusuario', async function (req, res) {
       .json({ general: "Something went wrong, please try again" });
   }
 });
+
+app.post('/setMatchFinished', async function (req, res) {
+  const id = req.body.id;
+  const estado = req.body.estado;
+  const urlVideo = req.body.urlVideo;
+
+  await db.collection('partidos').doc(id).update({
+    estado: estado
+  })
+
+  res.json({ message: 'Partido activado' })
+})

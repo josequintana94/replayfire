@@ -293,9 +293,14 @@ app.post('/setMatchFinished', async function (req, res) {
   const estado = req.body.estado;
   const urlVideo = req.body.urlVideo;
 
+  console.log('Updating document with id:', id);
+  console.log('New estado:', estado);
+  console.log('New urlVideo:', urlVideo);
+
   await db.collection('partidos').doc(id).update({
-    estado: estado
+    estado: estado,
+    urlVideo: urlVideo
   })
 
-  res.json({ message: 'Partido activado' })
+  res.json({ message: 'Partido finalizado' })
 })

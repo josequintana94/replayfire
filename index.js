@@ -329,3 +329,23 @@ app.post('/eliminarCamara', function (req, res) {
 
   res.send('camera eliminado');
 });
+
+app.get('/camaras', async function (req, res) {
+  const camarasRef = db.collection('camaras');
+  const queryRef = camarasRef;
+
+  try {
+    queryRef.get().then((snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log(data);
+      return res.status(201).json(data);
+    })
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ general: "Something went wrong, please try again" });
+  }
+});

@@ -315,6 +315,9 @@ app.post('/crearCamara', function (req, res) {
     username
   }).then(function (docRef) {
     console.log("Document written with ID: ", docRef.id);
+    db.collection('camaras').doc(docRef.id).update({
+      id: docRef.id
+    })
     res.send('camera creado');
   }).catch(function (error) {
     console.error("Error adding document: ", error);
@@ -330,9 +333,10 @@ app.post('/eliminarCamara', function (req, res) {
   res.send('camera eliminado');
 });
 
-app.get('/camaras', async function (req, res) {
+app.post('/camarasusuario', async function (req, res) {
+  const { usuario } = req.body;
   const camarasRef = db.collection('camaras');
-  const queryRef = camarasRef;
+  const queryRef = camarasRef.where('username', '==', usuario);
 
   try {
     queryRef.get().then((snapshot) => {

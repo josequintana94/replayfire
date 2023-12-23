@@ -197,7 +197,6 @@ app.post('/crearGrabacion', function (req, res) {
     });
 })
 
-// Modified endpoint for creating a user with encrypted password and API key authentication
 app.post('/crearUsuario', function (req, res) {
   const providedApiKey = req.headers['api-key'];
 
@@ -304,3 +303,29 @@ app.post('/setMatchFinished', async function (req, res) {
 
   res.json({ message: 'Partido finalizado' })
 })
+
+app.post('/crearCamara', function (req, res) {
+  const ip = req.body.email;
+  const username = req.body.username;
+  const password = req.body.password;
+
+  db.collection('camaras').add({
+    ip,
+    password,
+    username
+  }).then(function (docRef) {
+    console.log("Document written with ID: ", docRef.id);
+    res.send('camera creado');
+  }).catch(function (error) {
+    console.error("Error adding document: ", error);
+    res.status(500).send("Internal Server Error");
+  });
+});
+
+app.post('/eliminarCamara', function (req, res) {
+  const id = req.body.id;
+
+  db.collection('camaras').doc(id).delete();
+
+  res.send('camera eliminado');
+});

@@ -305,7 +305,7 @@ app.post('/setMatchFinished', async function (req, res) {
 })
 
 app.post('/crearCamara', function (req, res) {
-  const ip = req.body.email;
+  const ip = req.body.ip;
   const username = req.body.username;
   const password = req.body.password;
   const usuario = req.body.usuario;

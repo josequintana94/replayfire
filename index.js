@@ -334,7 +334,7 @@ app.post('/eliminarCamara', function (req, res) {
 });
 
 app.post('/camarasusuario', async function (req, res) {
-  const { usuario } = req.body;
+  const { usuario } = req.body.usuario;
   const camarasRef = db.collection('camaras');
   const queryRef = camarasRef.where('username', '==', usuario);
 

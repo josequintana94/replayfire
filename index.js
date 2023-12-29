@@ -308,11 +308,13 @@ app.post('/crearCamara', function (req, res) {
   const ip = req.body.email;
   const username = req.body.username;
   const password = req.body.password;
+  const usuario = req.body.usuario;
 
   db.collection('camaras').add({
     ip,
     password,
-    username
+    username,
+    usuario
   }).then(function (docRef) {
     console.log("Document written with ID: ", docRef.id);
     db.collection('camaras').doc(docRef.id).update({

@@ -1,3 +1,5 @@
+import { Resend } from 'resend';
+
 var express = require('express');
 const { db } = require("./admin");
 const path = require('path')
@@ -5,6 +7,7 @@ const ejs = require('ejs');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // Number of salt rounds for bcrypt hashing
 const apiKey = '3128fahsf9ah142941h2jk14h124812h9412lkdnsa90932141'; // Replace this with your actual API key
+const resend = new Resend('re_TPY59hxt_3GhbC97WRNQqoHA8TgXcM7oo');
 
 // SDK de Mercado Pago
 const mercadopago = require("mercadopago");
@@ -300,6 +303,23 @@ app.post('/setMatchFinished', async function (req, res) {
     estado: estado,
     urlVideo: urlVideo
   })
+
+  const partido = await db.collection('partidos').doc(id).get();
+
+  (async function () {
+    const { data, error } = await resend.emails.send({
+      from: 'Acme <onboarding@resend.dev>',
+      to: [partido.data().emailUsuario],
+      subject: 'Hello World',
+      html: '<strong>It works!</strong>',
+    });
+  
+    if (error) {
+      return console.error({ error });
+    }
+  
+    console.log({ data });
+  })();
 
   res.json({ message: 'Partido finalizado' })
 })

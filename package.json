@@ -24,6 +24,7 @@
     "express": "^4.18.1",
     "firebase": "^9.8.1",
     "firebase-admin": "^10.2.0",
-    "mercadopago": "^1.5.13"
+    "mercadopago": "^1.5.13",
+    "resend": "^2.1.0"
   }
 }

@@ -311,7 +311,8 @@ app.post('/setMatchFinished', async function (req, res) {
       from: 'Acme <onboarding@resend.dev>',
       to: [partido.data().emailUsuario],
       subject: 'Hello World',
-      html: '<strong>It works!</strong>',
+      //put partido.data().urlVideo in text link
+      html: '<strong>It works!</strong><br><br>Check out your video here: ' + partido.data().urlVideo,
     });
   
     if (error) {

@@ -291,39 +291,52 @@ app.post('/partidosusuario', async function (req, res) {
 });
 
 app.post('/setMatchFinished', async function (req, res) {
-  const id = req.body.id;
-  const estado = req.body.estado;
-  const urlVideo = req.body.urlVideo;
+  try {
+    const id = req.body.id;
+    const estado = req.body.estado;
+    const urlVideo = req.body.urlVideo;
 
-  console.log('Updating document with id:', id);
-  console.log('New estado:', estado);
-  console.log('New urlVideo:', urlVideo);
+    console.log('Updating document with id:', id);
+    console.log('New estado:', estado);
+    console.log('New urlVideo:', urlVideo);
 
-  await db.collection('partidos').doc(id).update({
-    estado: estado,
-    urlVideo: urlVideo
-  })
+    // Check if the document exists before attempting to update
+    const partidoRef = db.collection('partidos').doc(id);
+    const partidoSnapshot = await partidoRef.get();
 
-  const partido = await db.collection('partidos').doc(id).get();
+    if (!partidoSnapshot.exists) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
 
-  (async function () {
+    // Update the document
+    await partidoRef.update({
+      estado: estado,
+      urlVideo: urlVideo
+    });
+
+    const partido = partidoSnapshot.data();
+
+    // Send email
     const { data, error } = await resend.emails.send({
       from: 'Acme <onboarding@resend.dev>',
-      to: [partido.data().emailUsuario],
+      to: [partido.emailUsuario],
       subject: 'Hello World',
-      //put partido.data().urlVideo in text link
-      html: '<strong>It works!</strong><br><br>Check out your video here: ' + partido.data().urlVideo,
+      html: '<strong>It works!</strong><br><br>Check out your video here: ' + partido.urlVideo,
     });
-  
-    if (error) {
-      return console.error({ error });
-    }
-  
-    console.log({ data });
-  })();
 
-  res.json({ message: 'Partido finalizado' })
-})
+    if (error) {
+      console.error('Email sending error:', error);
+      return res.status(500).json({ error: 'Error sending email' });
+    }
+
+    console.log('Email sent successfully:', data);
+
+    res.json({ message: 'Partido finalizado' });
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 app.post('/crearCamara', function (req, res) {
   const ip = req.body.ip;

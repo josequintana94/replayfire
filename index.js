@@ -1,8 +1,12 @@
-import { Resend } from 'resend';
+const { Resend } = require('resend');
+const express = require('express');
+const http = require('http'); // Import http module
+const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server); // Pass the server instance to socket.io
 
-var express = require('express');
 const { db } = require("./admin");
-const path = require('path')
+const path = require('path');
 const ejs = require('ejs');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // Number of salt rounds for bcrypt hashing
@@ -16,7 +20,6 @@ mercadopago.configure({
   access_token: "APP_USR-1511729438549592-053119-b113cdd4269adc4e1b84933a9d0504ee-243216906",
 });
 
-var app = express();
 const bodyParser = require("body-parser")
 app.use(bodyParser.urlencoded({
   extended: true
@@ -34,6 +37,15 @@ app.use((req, res, next) => {
 });// to get access to the server from any domain like postman.
 
 app.use(bodyParser.json());
+
+app.get('/', (req, res) => {
+  res.send('Match recordings is running on port ' + PORT)
+});
+
+
+server.listen(PORT, () => {
+  console.log('Node app is running on port' + PORT);
+});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname + '/index.html'));
@@ -123,10 +135,6 @@ app.get("/:id", (req, res) => {
   res.render('form', { id: uniqueId });
 });
 
-app.listen(PORT, function () {
-  console.log(`Demo project at: ${PORT}!`);
-});
-
 app.post('/crearGrabacion', function (req, res) {
   const id = req.body.id;
   const email = req.body.email;
@@ -168,6 +176,7 @@ app.post('/crearGrabacion', function (req, res) {
   }).then(function (docRef) {
 
     console.log("Document written with ID: ", docRef.id);
+    socket.broadcast.emit('match_record_created', docRef.id);
 
     // Crea un objeto de preferencia
     let preference = {
@@ -388,4 +397,12 @@ app.post('/camarasusuario', async function (req, res) {
       .status(500)
       .json({ general: "Something went wrong, please try again" });
   }
+});
+
+io.on('connection', (socket) => {
+  console.log('listening socket');
+  socket.on('match_record_created', (msg) => {
+    console.log('match_record_created: ' + msg);
+    io.emit('match_record_created', msg);
+  })
 });

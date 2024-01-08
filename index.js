@@ -42,7 +42,6 @@ app.get('/', (req, res) => {
   res.send('Match recordings is running on port ' + PORT)
 });
 
-
 server.listen(PORT, () => {
   console.log('Node app is running on port' + PORT);
 });
@@ -135,79 +134,81 @@ app.get("/:id", (req, res) => {
   res.render('form', { id: uniqueId });
 });
 
-app.post('/crearGrabacion', function (req, res) {
-  const id = req.body.id;
-  const email = req.body.email;
-  const recordingDate = req.body.recordingDate;
+io.on('connection', (socket) => {
+  app.post('/crearGrabacion', function (req, res) {
+    const id = req.body.id;
+    const email = req.body.email;
+    const recordingDate = req.body.recordingDate;
 
-  console.log("id: " + id);
-  console.log("email: " + email);
-  console.log("recordingDate: " + recordingDate);
+    console.log("id: " + id);
+    console.log("email: " + email);
+    console.log("recordingDate: " + recordingDate);
 
-  Date.prototype.addHours = function (h) {
-    this.setTime(this.getTime() + (h * 60 * 60 * 1000));
-    return this;
-  }
+    Date.prototype.addHours = function (h) {
+      this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+      return this;
+    }
 
-  var endDate = new Date(recordingDate);
-  endDate.setSeconds(endDate.getSeconds() + 200);
-  endDate = new Date(endDate);
+    var endDate = new Date(recordingDate);
+    endDate.setSeconds(endDate.getSeconds() + 200);
+    endDate = new Date(endDate);
 
-  var idCancha = id;
-  var nombreCancha = id;
-  var estado = 'inactivo';
-  var emailUsuario = email;
-  var fechaInicio = new Date(recordingDate);
-  var fechaFinn = endDate;
-  var idCamara = 247;
-  var urlVideo = 'dropbox.com';
-  var hashMercadopago = 'rasdasd123123wasd';
+    var idCancha = id;
+    var nombreCancha = id;
+    var estado = 'inactivo';
+    var emailUsuario = email;
+    var fechaInicio = new Date(recordingDate);
+    var fechaFinn = endDate;
+    var idCamara = 247;
+    var urlVideo = 'dropbox.com';
+    var hashMercadopago = 'rasdasd123123wasd';
 
-  db.collection('partidos').add({
-    idCancha,
-    nombreCancha,
-    estado,
-    emailUsuario,
-    fechaInicio,
-    fechaFinn,
-    idCamara,
-    urlVideo,
-    hashMercadopago
-  }).then(function (docRef) {
+    db.collection('partidos').add({
+      idCancha,
+      nombreCancha,
+      estado,
+      emailUsuario,
+      fechaInicio,
+      fechaFinn,
+      idCamara,
+      urlVideo,
+      hashMercadopago
+    }).then(function (docRef) {
 
-    console.log("Document written with ID: ", docRef.id);
-    socket.broadcast.emit('match_record_created', docRef.id);
+      console.log("Document written with ID: ", docRef.id);
+      socket.broadcast.emit('match_record_created', docRef.id);
 
-    // Crea un objeto de preferencia
-    let preference = {
-      items: [
-        {
-          title: "Mi producto",
-          unit_price: 10,
-          quantity: 1,
-        },
-      ],
-      external_reference: docRef.id
-    };
+      // Crea un objeto de preferencia
+      let preference = {
+        items: [
+          {
+            title: "Mi producto",
+            unit_price: 10,
+            quantity: 1,
+          },
+        ],
+        external_reference: docRef.id
+      };
 
-    mercadopago.preferences
-      .create(preference)
-      .then(function (response) {
+      mercadopago.preferences
+        .create(preference)
+        .then(function (response) {
 
 
-        console.log(response);
-        //res.redirect(response.body.init_point);
-        res.send(response.body.init_point);
+          console.log(response);
+          //res.redirect(response.body.init_point);
+          res.send(response.body.init_point);
 
-      })
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    })
       .catch(function (error) {
-        console.log(error);
+        console.error("Error adding document: ", error);
       });
   })
-    .catch(function (error) {
-      console.error("Error adding document: ", error);
-    });
-})
+});
 
 app.post('/crearUsuario', function (req, res) {
   const providedApiKey = req.headers['api-key'];

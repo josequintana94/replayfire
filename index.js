@@ -396,9 +396,6 @@ io.on("connection", (socket) => {
   // Handle other socket events here
   socket.on("match_record_created", (data) => {
     console.log("Match record created:", data);
-
-    // You can broadcast the event to all connected clients
-    io.emit("match_record_created", data);
   });
 });
 

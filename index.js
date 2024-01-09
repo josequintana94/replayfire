@@ -1,57 +1,45 @@
 const { Resend } = require('resend');
 const express = require('express');
-const http = require('http'); // Import http module
-const app = express();
-const server = http.createServer(app);
-const io = require('socket.io')(server); // Pass the server instance to socket.io
-
 const { db } = require("./admin");
 const path = require('path');
 const ejs = require('ejs');
 const bcrypt = require('bcrypt');
-const saltRounds = 10; // Number of salt rounds for bcrypt hashing
-const apiKey = '3128fahsf9ah142941h2jk14h124812h9412lkdnsa90932141'; // Replace this with your actual API key
+const saltRounds = 10;
+const apiKey = '3128fahsf9ah142941h2jk14h124812h9412lkdnsa90932141';
 const resend = new Resend('re_TPY59hxt_3GhbC97WRNQqoHA8TgXcM7oo');
-
-// SDK de Mercado Pago
 const mercadopago = require("mercadopago");
-// Agrega credenciales
+const bodyParser = require("body-parser");
+const http = require("http");
+const socketIO = require("socket.io");
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
+
+const PORT = process.env.PORT || 5050;
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
 mercadopago.configure({
   access_token: "APP_USR-1511729438549592-053119-b113cdd4269adc4e1b84933a9d0504ee-243216906",
 });
 
-const bodyParser = require("body-parser")
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-app.use(express.urlencoded({ extended: false }));
-app.set('view engine', 'ejs'); // Set EJS as the template engine
+app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
-const PORT = process.env.PORT || 5050;
-
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*'); res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});// to get access to the server from any domain like postman.
-
-app.use(bodyParser.json());
-
-app.get('/', (req, res) => {
-  res.send('Match recordings is running on port ' + PORT)
-});
-
-server.listen(PORT, () => {
-  console.log('Node app is running on port' + PORT);
-});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname + '/index.html'));
-  //res.send('This is my demo project')
-})
+});
 
-const { partidos } = require('./handlers/partidos')
+const { partidos } = require('./handlers/partidos');
 app.get('/partidos', partidos);
 
 app.post('/setActivo', async function (req, res) {
@@ -134,81 +122,79 @@ app.get("/:id", (req, res) => {
   res.render('form', { id: uniqueId });
 });
 
-io.on('connection', (socket) => {
-  app.post('/crearGrabacion', function (req, res) {
-    const id = req.body.id;
-    const email = req.body.email;
-    const recordingDate = req.body.recordingDate;
+app.post('/crearGrabacion', function (req, res) {
+  const id = req.body.id;
+  const email = req.body.email;
+  const recordingDate = req.body.recordingDate;
 
-    console.log("id: " + id);
-    console.log("email: " + email);
-    console.log("recordingDate: " + recordingDate);
+  console.log("id: " + id);
+  console.log("email: " + email);
+  console.log("recordingDate: " + recordingDate);
 
-    Date.prototype.addHours = function (h) {
-      this.setTime(this.getTime() + (h * 60 * 60 * 1000));
-      return this;
-    }
+  Date.prototype.addHours = function (h) {
+    this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+    return this;
+  }
 
-    var endDate = new Date(recordingDate);
-    endDate.setSeconds(endDate.getSeconds() + 200);
-    endDate = new Date(endDate);
+  var endDate = new Date(recordingDate);
+  endDate.setSeconds(endDate.getSeconds() + 200);
+  endDate = new Date(endDate);
 
-    var idCancha = id;
-    var nombreCancha = id;
-    var estado = 'inactivo';
-    var emailUsuario = email;
-    var fechaInicio = new Date(recordingDate);
-    var fechaFinn = endDate;
-    var idCamara = 247;
-    var urlVideo = 'dropbox.com';
-    var hashMercadopago = 'rasdasd123123wasd';
+  var idCancha = id;
+  var nombreCancha = id;
+  var estado = 'inactivo';
+  var emailUsuario = email;
+  var fechaInicio = new Date(recordingDate);
+  var fechaFinn = endDate;
+  var idCamara = 247;
+  var urlVideo = 'dropbox.com';
+  var hashMercadopago = 'rasdasd123123wasd';
 
-    db.collection('partidos').add({
-      idCancha,
-      nombreCancha,
-      estado,
-      emailUsuario,
-      fechaInicio,
-      fechaFinn,
-      idCamara,
-      urlVideo,
-      hashMercadopago
-    }).then(function (docRef) {
+  db.collection('partidos').add({
+    idCancha,
+    nombreCancha,
+    estado,
+    emailUsuario,
+    fechaInicio,
+    fechaFinn,
+    idCamara,
+    urlVideo,
+    hashMercadopago
+  }).then(function (docRef) {
 
-      console.log("Document written with ID: ", docRef.id);
-      socket.broadcast.emit('match_record_created', docRef.id);
+    console.log("Document written with ID: ", docRef.id);
+    io.emit('match_record_created', docRef.id);
 
-      // Crea un objeto de preferencia
-      let preference = {
-        items: [
-          {
-            title: "Mi producto",
-            unit_price: 10,
-            quantity: 1,
-          },
-        ],
-        external_reference: docRef.id
-      };
+    // Crea un objeto de preferencia
+    let preference = {
+      items: [
+        {
+          title: "Mi producto",
+          unit_price: 10,
+          quantity: 1,
+        },
+      ],
+      external_reference: docRef.id
+    };
 
-      mercadopago.preferences
-        .create(preference)
-        .then(function (response) {
+    mercadopago.preferences
+      .create(preference)
+      .then(function (response) {
 
 
-          console.log(response);
-          //res.redirect(response.body.init_point);
-          res.send(response.body.init_point);
+        console.log(response);
+        //res.redirect(response.body.init_point);
+        res.send(response.body.init_point);
 
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    })
+      })
       .catch(function (error) {
-        console.error("Error adding document: ", error);
+        console.log(error);
       });
   })
-});
+    .catch(function (error) {
+      console.error("Error adding document: ", error);
+    });
+})
 
 app.post('/crearUsuario', function (req, res) {
   const providedApiKey = req.headers['api-key'];
@@ -400,10 +386,22 @@ app.post('/camarasusuario', async function (req, res) {
   }
 });
 
-io.on('connection', (socket) => {
-  console.log('listening socket');
-  socket.on('match_record_created', (msg) => {
-    console.log('match_record_created: ' + msg);
-    io.emit('match_record_created', msg);
-  })
+io.on("connection", (socket) => {
+  console.log("A user connected");
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+
+  // Handle other socket events here
+  socket.on("match_record_created", (data) => {
+    console.log("Match record created:", data);
+
+    // You can broadcast the event to all connected clients
+    io.emit("match_record_created", data);
+  });
+});
+
+server.listen(PORT, function () {
+  console.log(`Demo project at: ${PORT}!`);
 });

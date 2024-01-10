@@ -137,7 +137,7 @@ app.post('/crearGrabacion', function (req, res) {
   }
 
   var endDate = new Date(recordingDate);
-  endDate.setHours(endDate.getHours() + 1);
+  endDate.setMinutes(endDate.getMinutes() + 20);
   endDate = new Date(endDate);
 
   var idCancha = id;

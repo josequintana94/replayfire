@@ -367,6 +367,8 @@ app.post('/actualizarCamara', function (req, res) {
   const password = req.body.password;
   const camStatus = req.body.camStatus;
 
+  console.log('Updating document with id:', id);
+
   db.collection('camaras').doc(id).update({
     ip,
     password,

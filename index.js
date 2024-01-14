@@ -352,7 +352,8 @@ app.post('/crearCamara', function (req, res) {
     db.collection('camaras').doc(docRef.id).update({
       id: docRef.id
     })
-    res.send('camera creado');
+    //return camera info
+    res.json({ id: docRef.id });
   }).catch(function (error) {
     console.error("Error adding document: ", error);
     res.status(500).send("Internal Server Error");

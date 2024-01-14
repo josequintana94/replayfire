@@ -339,12 +339,14 @@ app.post('/crearCamara', function (req, res) {
   const username = req.body.username;
   const password = req.body.password;
   const usuario = req.body.usuario;
+  const camStatus = 'free'
 
   db.collection('camaras').add({
     ip,
     password,
     username,
-    usuario
+    usuario,
+    camStatus
   }).then(function (docRef) {
     console.log("Document written with ID: ", docRef.id);
     db.collection('camaras').doc(docRef.id).update({
@@ -355,6 +357,23 @@ app.post('/crearCamara', function (req, res) {
     console.error("Error adding document: ", error);
     res.status(500).send("Internal Server Error");
   });
+});
+
+app.post('/actualizarCamara', function (req, res) {
+  const id = req.body.id;
+  const ip = req.body.ip;
+  const username = req.body.username;
+  const password = req.body.password;
+  const camStatus = req.body.camStatus;
+
+  db.collection('camaras').doc(id).update({
+    ip,
+    password,
+    username,
+    camStatus
+  })
+
+  res.send('camera actualizado');
 });
 
 app.post('/eliminarCamara', function (req, res) {
